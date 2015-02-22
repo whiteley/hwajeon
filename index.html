@@ -43,8 +43,8 @@
 
 </style>
 <form>
-  <label><input type="radio" name="mode" value="size"> Size</label>
-  <label><input type="radio" name="mode" value="count" checked> Count</label>
+  <label><input type="radio" name="mode" value="time" checked> Time</label>
+  <!-- <label><input type="radio" name="mode" value="count"> Count</label> -->
 </form>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
@@ -63,7 +63,7 @@
   var partition = d3.layout.partition()
   .sort(null)
   .size([2 * Math.PI, radius * radius])
-  .value(function(d) { return 1; });
+  .value(function(d) { return d.time; });
 
   var arc = d3.svg.arc()
   .startAngle(function(d) { return d.x; })
@@ -78,10 +78,10 @@
       .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
       .attr("d", arc)
       .style("stroke", "#fff")
-      .style("fill", function(d) { return color((d.children ? d : d.parent).instance_vars.name); })
+      .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
       .style("fill-rule", "evenodd")
       .on("mouseover", function(d) {
-        tooltip.show([d3.event.clientX,d3.event.clientY],'<div>'+d.instance_vars.name+'</div>  <div>'+d.value+'</div>')
+        tooltip.show([d3.event.clientX,d3.event.clientY],'<div>'+d.name+'</div>  <div>'+d.value+'</div>')
       })
       .on('mouseout',function(){
         tooltip.cleanup()
@@ -91,7 +91,7 @@
       d3.selectAll("input").on("change", function change() {
         var value = this.value === "count"
         ? function() { return 1; }
-        : function(d) { return d.instance_vars.elapsed_time; };
+        : function(d) { return d.time; };
 
         path
         .data(partition.value(value).nodes)
